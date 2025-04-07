@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -43,8 +43,8 @@ class WelcomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     
-                    SvgPicture.asset(
-                      'assets/images/ini_logo.svg', // Replace with your logo file
+                    Image.asset(
+                      'assets/images/ini_logo.png', // Replace with your logo file
                       height: 100,
                     ),
                     const SizedBox(height: 16),
@@ -61,8 +61,8 @@ class WelcomePage extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     
-                    SvgPicture.asset(
-                      'assets/images/smart_campus.svg', 
+                    Image.asset(
+                      'assets/images/smart_campus_logo.png', 
                       height: 100,
                     ),
                     const SizedBox(height: 12),

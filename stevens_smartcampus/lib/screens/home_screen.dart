@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,8 +53,8 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Replace with your actual logo asset
-                          SvgPicture.asset(
-                            'assets/images/appbar_logo.svg',
+                          Image.asset(
+                            'assets/images/appbar_logo.png',
                             width: 65,
                             height: 60,
                             fit: BoxFit.contain,
@@ -68,52 +67,42 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
-                              // fontFamily: 'Aleo', // Uncomment if you have the Aleo font
                             ),
                           ),
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
                     // ======================
                     // SHUTTLE SERVICES
                     // ======================
                     sectionTitle('Shuttle Services'),
-
                     buildCustomCard(
                       title: 'Schedule',
-                      subtitle:
-                          'Book your shuttle 3hrs prior and go hustle free',
-                      icon: Icons.schedule,
+                      subtitle: 'Book your shuttle 3hrs prior and go hustle free',
+                      pngAsset: 'assets/images/stevens_logo.png',
                     ),
                     buildCustomCard(
                       title: 'Book Now',
                       subtitle: 'Instant shuttle booking',
-                      icon: Icons.send_rounded,
+                      pngAsset: 'assets/images/stevens_logo.png',
                     ),
-
                     const SizedBox(height: 24),
-
                     // ======================
                     // CAMPUS NAVIGATION
                     // ======================
                     sectionTitle('Campus Navigation'),
-
                     buildCustomCard(
                       title: 'Find a classroom',
                       subtitle: 'Navigate inside the campus',
-                      svgAsset: 'assets/images/navigate_home.svg',
+                      pngAsset: 'assets/images/classroom_home.png',
                     ),
                     buildCustomCard(
                       title: 'Navigate',
                       subtitle: 'Roam around the campus',
-                      svgAsset: 'assets/images/navigate_home.svg',
+                      pngAsset: 'assets/images/navigate_home.png',
                     ),
-
                     const SizedBox(height: 24),
-
                     // ======================
                     // CUSTOMER SERVICE CARD
                     // ======================
@@ -156,7 +145,6 @@ class _HomePageState extends State<HomePage> {
                                     // Figma: 14px, Bold
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    // fontFamily: 'Aleo',
                                   ),
                                 ),
                               ],
@@ -201,7 +189,6 @@ class _HomePageState extends State<HomePage> {
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: Colors.black,
-          // fontFamily: 'Aleo',
         ),
       ),
     );
@@ -214,7 +201,7 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required String subtitle,
     IconData? icon,
-    String? svgAsset,
+    String? pngAsset,
   }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -232,8 +219,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           child: Row(
             children: [
               // Title & Subtitle
@@ -248,7 +234,6 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        // fontFamily: 'Aleo',
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -259,19 +244,18 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: Colors.black,
-                        // fontFamily: 'Aleo',
                       ),
                     ),
                   ],
                 ),
               ),
-              // Trailing icon or SVG
-              if (svgAsset != null)
+              // Trailing image: Use PNG instead of SVG
+              if (pngAsset != null)
                 SizedBox(
                   width: 40,
                   height: 40,
-                  child: SvgPicture.asset(
-                    svgAsset,
+                  child: Image.asset(
+                    pngAsset,
                     fit: BoxFit.contain,
                   ),
                 )
@@ -305,7 +289,6 @@ class ServiceContactLine extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.normal,
             color: Colors.black,
-            // fontFamily: 'Aleo',
           ),
         ),
       ],
