@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   pin_code_fields: ^8.0.1
+  flutter_svg: ^2.0.17
 
 
 dev_dependencies:
@@ -59,10 +60,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
   # To add assets to your application, add an assets section, like this:
-  # assets:
-    # - assets/images
+  assets:
+    - assets/images/welcome_bg.jpeg
+    - assets/images/smart_campus.svg
+    - assets/images/ini_logo.svg
+    - assets/images/classroom_home.svg
+    - assets/images/appbar_logo.svg
+    - assets/images/mail.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

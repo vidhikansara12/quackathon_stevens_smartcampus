@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});
@@ -24,8 +25,8 @@ class CustomAppBar extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Image.asset(
-                'assets/stevens_logo.png',
+              child: SvgPicture.asset(
+                'assets/images/appbar_logo.svg',
                 width: 30,
                 height: 30,
                 errorBuilder: (context, error, stackTrace) => const Icon(

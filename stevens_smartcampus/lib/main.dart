@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/welcome': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
         '/verify': (context) => const OktaVerifyPage(),
-        '/nav': (context) => const NavScreen(), // <-- use NavScreen, not BottomPage
+        '/nav': (context) => const NavScreen(), 
       },
     );
   }
