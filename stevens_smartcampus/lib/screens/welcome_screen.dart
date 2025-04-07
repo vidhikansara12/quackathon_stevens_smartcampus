@@ -47,13 +47,13 @@ class WelcomePage extends StatelessWidget {
                       'assets/images/ini_logo.png', // Replace with your logo file
                       height: 100,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
                     
                     const Text(
                       'Stevens',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFB00808),
                       ),
@@ -63,7 +63,7 @@ class WelcomePage extends StatelessWidget {
                     
                     Image.asset(
                       'assets/images/smart_campus_logo.png', 
-                      height: 100,
+                      height: 125,
                     ),
                     const SizedBox(height: 12),
 
