@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stevens_smartcampus/screens/booking_shuttle.dart';
 import 'package:stevens_smartcampus/screens/emergency_call.dart';
 import 'package:stevens_smartcampus/screens/home_screen.dart';
 import 'package:stevens_smartcampus/screens/map_screen.dart';
@@ -18,7 +19,7 @@ class BottomPage extends StatelessWidget {
     HomePage(),
     MapPage(),
     EmergencyPage(),
-    Placeholder(),
+    BookingScreen(),
     ProfilePage(),
   ];
 
