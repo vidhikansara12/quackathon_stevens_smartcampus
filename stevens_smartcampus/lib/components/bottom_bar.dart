@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stevens_smartcampus/screens/home_screen.dart';
+import 'package:stevens_smartcampus/screens/profile_screen.dart';
 
 class BottomPage extends StatelessWidget {
   final int selectedIndex;
@@ -16,7 +17,7 @@ class BottomPage extends StatelessWidget {
     Placeholder(),
     Placeholder(),
     Placeholder(),
-    Placeholder(),
+    ProfilePage(),
   ];
 
   @override

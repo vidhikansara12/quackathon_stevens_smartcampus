@@ -86,28 +86,6 @@ class _OktaVerifyPageState extends State<OktaVerifyPage> {
                             'assets/images/mail.png',
                             width: 160,
                           ),
-                          Positioned(
-                            top: -10,
-                            right: -10,
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: const BoxDecoration(
-                                color: Colors.deepOrange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  '1',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
