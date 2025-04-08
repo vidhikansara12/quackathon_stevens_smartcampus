@@ -1,6 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+void main() {
+  runApp(SmartCampusApp());
+}
+
+class SmartCampusApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'SmartCampus Shuttle',
+      debugShowCheckedModeBanner: false,
+      home: ShuttleHomeScreen(),
+    );
+  }
+}
+
 class ShuttleHomeScreen extends StatelessWidget {
   final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
   final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
@@ -140,7 +155,7 @@ class GradientButton extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   final bool isSchedule;
 
-  const HomeScreen({required this.isSchedule});
+  HomeScreen({required this.isSchedule});
 
   final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
   final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
@@ -449,12 +464,12 @@ class TimeSlotScreen extends StatelessWidget {
     );
   }
 }
-class QueueStatusScreen extends StatefulWidget {
-  const QueueStatusScreen({super.key});
 
+class QueueStatusScreen extends StatefulWidget {
   @override
-  State<QueueStatusScreen> createState() => _QueueStatusScreenState();
+  _QueueStatusScreenState createState() => _QueueStatusScreenState();
 }
+
 
 class _QueueStatusScreenState extends State<QueueStatusScreen> {
   int position = 3;
@@ -467,13 +482,12 @@ class _QueueStatusScreenState extends State<QueueStatusScreen> {
         setState(() => position--);
       } else {
         timer.cancel();
-        // Navigate to the ConfirmationScreen with a background image
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => ConfirmationScreen(
               message: 'Your ride has been assigned.',
-              imageUrl: 'https://i.postimg.cc/5tqQj3Ly/confirmation.png', // Change with your URL
+              imageUrl: 'https://i.postimg.cc/Y9yq8czh/con.png',
             ),
           ),
         );
@@ -543,15 +557,17 @@ class _QueueStatusScreenState extends State<QueueStatusScreen> {
 }
 
 
+
 class ConfirmationScreen extends StatelessWidget {
   final String title;
   final String message;
   final String imageUrl;
 
-  ConfirmationScreen({
+  const ConfirmationScreen({
     this.title = 'Ride Confirmed!',
     required this.message,
-    this.imageUrl = 'https://i.postimg.cc/ZYxsbYgm/con.png', // Customize with your image URL
+    this.imageUrl = 'https://i.postimg.cc/Y9yq8czh/con.png',
+    super.key,
   });
 
   @override
@@ -562,7 +578,10 @@ class ConfirmationScreen extends StatelessWidget {
           Positioned.fill(
             child: Image.network(
               imageUrl,
-              fit: BoxFit.cover, // Fill the screen with the image
+              fit: BoxFit.contain,
+              width: double.infinity,
+              height: double.infinity,
+              alignment: Alignment.center,
             ),
           ),
           Center(
@@ -599,3 +618,4 @@ class ConfirmationScreen extends StatelessWidget {
     );
   }
 }
+
