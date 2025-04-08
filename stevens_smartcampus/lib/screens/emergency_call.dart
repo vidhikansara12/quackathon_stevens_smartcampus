@@ -40,6 +40,7 @@ class EmergencyPage extends StatelessWidget {
               if (await canLaunchUrl(url)) {
                 await launchUrl(url);
               } else {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Could not call $number")),
                 );

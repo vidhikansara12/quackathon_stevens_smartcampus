@@ -5,14 +5,11 @@ class ShuttleHomeScreen extends StatelessWidget {
   final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
   final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
 
-  const ShuttleHomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -21,18 +18,15 @@ class ShuttleHomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Overlay with red tint
           Container(
             color: Colors.black.withOpacity(0.3),
           ),
-          // Main content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Logo and title
                   Row(
                     children: [
                       CircleAvatar(
@@ -68,12 +62,10 @@ class ShuttleHomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 40),
-                  // Schedule button
                   Center(
                     child: GradientButton(
                       label: 'Schedule',
                       onPressed: () {
-                        // Navigate to the Schedule screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => HomeScreen(isSchedule: true)),
@@ -82,12 +74,10 @@ class ShuttleHomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  // Book button
                   Center(
                     child: GradientButton(
                       label: 'Book',
                       onPressed: () {
-                        // Navigate to the Location input screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => LocationInputScreen()),
@@ -109,10 +99,7 @@ class GradientButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const GradientButton({super.key, 
-    required this.label,
-    required this.onPressed,
-  });
+  const GradientButton({required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -150,18 +137,10 @@ class GradientButton extends StatelessWidget {
   }
 }
 
-// HomeScreen containing schedule logic
 class HomeScreen extends StatelessWidget {
   final bool isSchedule;
 
-  const HomeScreen({super.key, required this.isSchedule});
-
-  void _navigateToLocationScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => LocationInputScreen()),
-    );
-  }
+  const HomeScreen({required this.isSchedule});
 
   final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
   final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
@@ -170,22 +149,23 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Schedule'),
+        leading: BackButton(),
+        backgroundColor: Colors.black.withOpacity(0.5),
+      ),
       body: Stack(
         children: [
-          // 🔳 Background image
           Positioned.fill(
             child: Image.network(
               backgroundUrl,
               fit: BoxFit.cover,
             ),
           ),
-
-          // UI Layout
           Column(
             children: [
-              // Header and Logo
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Row(
                   children: [
                     Image.network(logoUrl, height: 50),
@@ -214,8 +194,6 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Map section (half screen)
               Container(
                 height: MediaQuery.of(context).size.height * 0.4,
                 margin: EdgeInsets.symmetric(horizontal: 16),
@@ -227,10 +205,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 16),
-
-              // Schedule logic area
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -249,7 +224,12 @@ class HomeScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () => _navigateToLocationScreen(context),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => LocationInputScreen(isSchedule: isSchedule)),
+                          );
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                           decoration: BoxDecoration(
@@ -282,10 +262,9 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// ➕ Booking Logic UI
 class LocationInputScreen extends StatefulWidget {
-  const LocationInputScreen({super.key});
-
+  final bool isSchedule;
+  LocationInputScreen({this.isSchedule = false});
   @override
   State<LocationInputScreen> createState() => _LocationInputScreenState();
 }
@@ -293,7 +272,6 @@ class LocationInputScreen extends StatefulWidget {
 class _LocationInputScreenState extends State<LocationInputScreen> {
   final TextEditingController _pickupController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-
   final FocusNode _pickupFocus = FocusNode();
   final FocusNode _destinationFocus = FocusNode();
 
@@ -325,13 +303,26 @@ class _LocationInputScreenState extends State<LocationInputScreen> {
       );
       return;
     }
-
-    // Navigate to the time slot screen after entering locations
+    if (widget.isSchedule) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => TimeSlotScreen(pickup: pickup, destination: destination)),
+      MaterialPageRoute(
+        builder: (_) => TimeSlotScreen(pickup: pickup, destination: destination),
+      ),
     );
+  } else {
+    // Go directly to booking confirmation (skip timeslot and queue)
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ConfirmationScreen(
+          message: 'Your ride has been assigned. You will be picked up shortly!',
+        ),
+      ),
+    );
+
   }
+}
 
   @override
   void dispose() {
@@ -358,7 +349,7 @@ class _LocationInputScreenState extends State<LocationInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter Locations')),
+      appBar: AppBar(title: Text('Enter Locations'), leading: BackButton()),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -373,12 +364,6 @@ class _LocationInputScreenState extends State<LocationInputScreen> {
                 fillColor: Colors.grey[200],
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              onTap: () {
-                FocusScope.of(context).requestFocus(_pickupFocus);
-              },
-              onSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_destinationFocus);
-              },
             ),
             SizedBox(height: 12),
             TextField(
@@ -391,9 +376,6 @@ class _LocationInputScreenState extends State<LocationInputScreen> {
                 fillColor: Colors.grey[200],
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              onTap: () {
-                FocusScope.of(context).requestFocus(_destinationFocus);
-              },
             ),
             SizedBox(height: 16),
             Text("Preset Locations", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -418,7 +400,6 @@ class _LocationInputScreenState extends State<LocationInputScreen> {
   }
 }
 
-// Time Slot Screen
 class TimeSlotScreen extends StatelessWidget {
   final String pickup;
   final String destination;
@@ -434,22 +415,13 @@ class TimeSlotScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Time Slot'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: AppBar(title: Text('Select Time Slot'), leading: BackButton()),
       body: ListView.builder(
         itemCount: timeSlots.length,
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(timeSlots[index]),
             onTap: () {
-              // After selecting a time slot, navigate to the booking confirmation
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -460,7 +432,6 @@ class TimeSlotScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        // If it's the schedule option, show the queue screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => QueueStatusScreen()),
@@ -478,12 +449,11 @@ class TimeSlotScreen extends StatelessWidget {
     );
   }
 }
-
 class QueueStatusScreen extends StatefulWidget {
   const QueueStatusScreen({super.key});
 
   @override
-  _QueueStatusScreenState createState() => _QueueStatusScreenState();
+  State<QueueStatusScreen> createState() => _QueueStatusScreenState();
 }
 
 class _QueueStatusScreenState extends State<QueueStatusScreen> {
@@ -497,14 +467,14 @@ class _QueueStatusScreenState extends State<QueueStatusScreen> {
         setState(() => position--);
       } else {
         timer.cancel();
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text('Ride Confirmed!'),
-            content: Text('Your ride has been assigned.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
-            ],
+        // Navigate to the ConfirmationScreen with a background image
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ConfirmationScreen(
+              message: 'Your ride has been assigned.',
+              imageUrl: 'https://i.postimg.cc/5tqQj3Ly/confirmation.png', // Change with your URL
+            ),
           ),
         );
       }
@@ -524,29 +494,17 @@ class _QueueStatusScreenState extends State<QueueStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Queue Status'), leading: BackButton()),
       body: Stack(
         children: [
-          // Background image from network with error handling
-          Positioned.fill(
-            child: Image.network(
-              'https://your-valid-image-url.com', // Replace this with a valid URL
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Center(child: Text('Image not found', style: TextStyle(color: Colors.white)));
-              },
-            ),
-          ),
-          // Overlay for darkening effect
           Positioned.fill(
             child: Container(
-              color: Color.fromRGBO(0, 0, 0, 0.3), // replaces deprecated withOpacity
+              color: Colors.grey[900],
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              color: Color.fromRGBO(0, 0, 0, 0.3),
             ),
           ),
           Center(
@@ -555,40 +513,83 @@ class _QueueStatusScreenState extends State<QueueStatusScreen> {
               children: [
                 Text(
                   'Finding Your Nearest Ride!',
-                  style: TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 SizedBox(height: 20),
                 Icon(Icons.directions_car, size: 50, color: Colors.white),
                 SizedBox(height: 20),
-                Text('Your position in line is',
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
-                Text(
-                  position.toString().padLeft(2, '0'),
-                  style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent),
-                ),
-                Text(
-                  'You will get your confirmation within 15 mins',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                Text('Your position in line is', style: TextStyle(fontSize: 18, color: Colors.white)),
+                Text(position.toString().padLeft(2, '0'),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                Text('You will get your confirmation within 15 mins', style: TextStyle(fontSize: 16, color: Colors.white)),
                 SizedBox(height: 30),
                 ElevatedButton.icon(
                   icon: Icon(Icons.check),
                   label: Text('Book Ride'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[600],
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green[600]),
                   onPressed: _simulateRideConfirmation,
                 ),
                 TextButton(
                   onPressed: _joinWaitlist,
-                  child: Text(
-                    'Someone joined the waitlist',
-                    style: TextStyle(color: Colors.white),
+                  child: Text('Someone joined the waitlist', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class ConfirmationScreen extends StatelessWidget {
+  final String title;
+  final String message;
+  final String imageUrl;
+
+  ConfirmationScreen({
+    this.title = 'Ride Confirmed!',
+    required this.message,
+    this.imageUrl = 'https://i.postimg.cc/ZYxsbYgm/con.png', // Customize with your image URL
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover, // Fill the screen with the image
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  message,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.home),
+                  label: Text('Back to Home'),
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
                 ),
               ],
             ),
