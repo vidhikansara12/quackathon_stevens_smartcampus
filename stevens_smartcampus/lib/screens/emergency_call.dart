@@ -26,12 +26,12 @@ class EmergencyPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Confirm Call"),
+        title: const Text("Confirm Call"),
         content: Text("Do you want to call $number?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
+            child: const Text("Cancel"),
           ),
           TextButton(
             onPressed: () async {
@@ -41,10 +41,11 @@ class EmergencyPage extends StatelessWidget {
                 await launchUrl(url);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Could not call $number")));
+                  SnackBar(content: Text("Could not call $number")),
+                );
               }
             },
-            child: Text("Call"),
+            child: const Text("Call"),
           )
         ],
       ),
@@ -56,6 +57,7 @@ class EmergencyPage extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
+        // Background image with 25% opacity
         Opacity(
           opacity: 0.25,
           child: Image.asset(
@@ -63,47 +65,80 @@ class EmergencyPage extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        Center(
+        SafeArea(
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+            child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                // Center all children horizontally
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: contacts.map((contact) {
-                  return Card(
-                    color: Colors.red[100],
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(contact['title']!,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
-                          if (contact['location']!.isNotEmpty)
-                            Text(contact['location']!,
-                                style: TextStyle(color: Colors.black54)),
-                          GestureDetector(
-                            onTap: () => _confirmAndCall(
-                                context, contact['phone']!),
-                            child: Text(
-                              contact['phone']!,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline),
+                children: [
+                  // Header section
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Replace with your actual logo asset
+                        Image.asset(
+                          'assets/images/appbar_logo.png',
+                          width: 65,
+                          height: 60,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'SmartCampus',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Emergency Contacts list (centered)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: contacts.map((contact) {
+                        return Card(
+                          color: Colors.red[100],
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              children: [
+                                Text(contact['title']!,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                                if (contact['location']!.isNotEmpty)
+                                  Text(contact['location']!,
+                                      style: const TextStyle(
+                                          color: Colors.black54)),
+                                GestureDetector(
+                                  onTap: () =>
+                                      _confirmAndCall(context, contact['phone']!),
+                                  child: Text(
+                                    contact['phone']!,
+                                    style: const TextStyle(
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
+                  )
+                ],
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

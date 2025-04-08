@@ -10,10 +10,10 @@ class BottomPage extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   const BottomPage({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   static final List<Widget> _pages = <Widget>[
     HomePage(),
