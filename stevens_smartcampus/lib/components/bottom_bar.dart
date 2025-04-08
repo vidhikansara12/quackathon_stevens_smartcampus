@@ -19,7 +19,7 @@ class BottomPage extends StatelessWidget {
     HomePage(),
     MapPage(),
     EmergencyPage(),
-    BookingScreen(),
+    ShuttleHomeScreen(),
     ProfilePage(),
   ];
 

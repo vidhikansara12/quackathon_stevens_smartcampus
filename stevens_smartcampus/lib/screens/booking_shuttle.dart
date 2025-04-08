@@ -1,22 +1,302 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key});
+class ShuttleHomeScreen extends StatelessWidget {
+  final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
+  final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
+
+  const ShuttleHomeScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _BookingScreenState createState() => _BookingScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(backgroundUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Overlay with red tint
+          Container(
+            color: Colors.black.withOpacity(0.3),
+          ),
+          // Main content
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Logo and title
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(logoUrl),
+                        radius: 28,
+                        backgroundColor: Colors.white,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'SmartCampus',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+                  Text(
+                    'Shuttle Services:',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.4),
+                          offset: Offset(1, 1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  // Schedule button
+                  Center(
+                    child: GradientButton(
+                      label: 'Schedule',
+                      onPressed: () {
+                        // Navigate to the Schedule screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => HomeScreen(isSchedule: true)),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Book button
+                  Center(
+                    child: GradientButton(
+                      label: 'Book',
+                      onPressed: () {
+                        // Navigate to the Location input screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => LocationInputScreen()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _BookingScreenState extends State<BookingScreen> {
-  // Controllers & FocusNodes for Location Input
+class GradientButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const GradientButton({super.key, 
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      constraints: BoxConstraints(maxWidth: 280),
+      height: 60,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.white, Colors.pink.shade200],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(2, 2),
+          )
+        ],
+      ),
+      child: TextButton(
+        onPressed: onPressed,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// HomeScreen containing schedule logic
+class HomeScreen extends StatelessWidget {
+  final bool isSchedule;
+
+  const HomeScreen({super.key, required this.isSchedule});
+
+  void _navigateToLocationScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => LocationInputScreen()),
+    );
+  }
+
+  final String logoUrl = 'https://i.postimg.cc/ZRGcQdxZ/logo.png';
+  final String backgroundUrl = 'https://i.postimg.cc/Xq0tf6Sn/stevens.png';
+  final String mapImageUrl = 'https://i.postimg.cc/vBXLHnGW/Screenshot-2025-04-07-190541.png';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // 🔳 Background image
+          Positioned.fill(
+            child: Image.network(
+              backgroundUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // UI Layout
+          Column(
+            children: [
+              // Header and Logo
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+                child: Row(
+                  children: [
+                    Image.network(logoUrl, height: 50),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'SmartCampus',
+                          style: TextStyle(
+                            fontSize: 26,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Schedule',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Map section (half screen)
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                margin: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                    image: NetworkImage(mapImageUrl),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+
+              // Schedule logic area
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      Text(
+                        "Pre-book your ride up to 3 hours in advance!",
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Note: You can only schedule 3 times a week",
+                        style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                      ),
+                      SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () => _navigateToLocationScreen(context),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade400),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search, color: Colors.blue),
+                              SizedBox(width: 12),
+                              Text(
+                                'Tap to set pickup address',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ➕ Booking Logic UI
+class LocationInputScreen extends StatefulWidget {
+  const LocationInputScreen({super.key});
+
+  @override
+  State<LocationInputScreen> createState() => _LocationInputScreenState();
+}
+
+class _LocationInputScreenState extends State<LocationInputScreen> {
   final TextEditingController _pickupController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
+
   final FocusNode _pickupFocus = FocusNode();
   final FocusNode _destinationFocus = FocusNode();
 
-  // Quick address options (used in the Location Input section)
   final List<String> quickOptions = [
     '9th St Light Rail Station',
     '2nd St Light Rail Station',
@@ -25,140 +305,32 @@ class _BookingScreenState extends State<BookingScreen> {
     'Shipyard',
   ];
 
-  // For the Queue Status simulation
-  int position = 3;
-  Timer? timer;
-  bool _bookingStarted = false;
-
-  // For the Schedule Section
-  String? selectedTime;
-  final List<String> availableTimes = ['5:30', '5:45', '6:00'];
-
-  // --- Location Input Methods ---
   void _handleQuickOptionTap(String address) {
     if (_pickupFocus.hasFocus || _pickupController.text.isEmpty) {
       _pickupController.text = address;
       FocusScope.of(context).requestFocus(_destinationFocus);
-    } else {
+    } else if (_destinationFocus.hasFocus || _pickupController.text.isNotEmpty) {
       _destinationController.text = address;
     }
     setState(() {});
   }
 
-  Widget _buildPresetButton(String label, String address) {
-    return ListTile(
-      leading: Icon(Icons.location_on, color: Colors.white),
-      title: Text(label, style: TextStyle(color: Colors.white)),
-      subtitle: Text(address, style: TextStyle(color: Colors.white70)),
-      onTap: () {
-        _pickupController.text = address;
-        FocusScope.of(context).requestFocus(_destinationFocus);
-        setState(() {});
-      },
-    );
-  }
-
-  // --- Booking & Queue Simulation Methods ---
   void _bookRide() {
     final pickup = _pickupController.text.trim();
     final destination = _destinationController.text.trim();
+
     if (pickup.isEmpty || destination.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please enter both pickup and destination')),
       );
       return;
     }
-    // Start the booking simulation
-    setState(() {
-      _bookingStarted = true;
-      position = 3; // reset position
-    });
-    _simulateRideConfirmation();
-  }
 
-  void _simulateRideConfirmation() {
-    timer?.cancel();
-    timer = Timer.periodic(Duration(seconds: 4), (timer) {
-      if (position > 1) {
-        setState(() {
-          position--;
-        });
-      } else {
-        timer.cancel();
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text('Ride Confirmed!'),
-            content: Text('Your ride has been assigned.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Optionally, reset booking simulation here if needed
-                },
-                child: Text('OK'),
-              )
-            ],
-          ),
-        );
-      }
-    });
-  }
-
-  void _joinWaitlist() {
-    setState(() {
-      position++;
-    });
-  }
-
-  // --- Schedule Section Methods ---
-  void _selectTime(String time) {
-    setState(() {
-      selectedTime = time;
-    });
-  }
-
-  Widget _buildTimeSlot(String time) {
-    final isSelected = time == selectedTime;
-    return ElevatedButton(
-      onPressed: () => _selectTime(time),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.red : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        side: BorderSide(color: Colors.redAccent, width: 1),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        elevation: 3,
-      ),
-      child: Text(
-        time,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: isSelected ? Colors.white : Colors.red,
-          letterSpacing: 1.1,
-        ),
-      ),
+    // Navigate to the time slot screen after entering locations
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => TimeSlotScreen(pickup: pickup, destination: destination)),
     );
-  }
-
-  void _bookSlot() {
-    if (selectedTime != null) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Booking Confirmed!'),
-          content: Text('Your slot at $selectedTime is confirmed.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Back'),
-            ),
-          ],
-        ),
-      );
-    }
   }
 
   @override
@@ -167,6 +339,184 @@ class _BookingScreenState extends State<BookingScreen> {
     _destinationController.dispose();
     _pickupFocus.dispose();
     _destinationFocus.dispose();
+    super.dispose();
+  }
+
+  Widget _presetButton(String label, String address) {
+    return ListTile(
+      leading: Icon(Icons.location_on),
+      title: Text(label),
+      subtitle: Text(address),
+      onTap: () {
+        _pickupController.text = address;
+        FocusScope.of(context).requestFocus(_destinationFocus);
+        setState(() {});
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Enter Locations')),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: _pickupController,
+              focusNode: _pickupFocus,
+              decoration: InputDecoration(
+                labelText: 'Pickup Location',
+                prefixIcon: Icon(Icons.my_location),
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onTap: () {
+                FocusScope.of(context).requestFocus(_pickupFocus);
+              },
+              onSubmitted: (_) {
+                FocusScope.of(context).requestFocus(_destinationFocus);
+              },
+            ),
+            SizedBox(height: 12),
+            TextField(
+              controller: _destinationController,
+              focusNode: _destinationFocus,
+              decoration: InputDecoration(
+                labelText: 'Destination Location',
+                prefixIcon: Icon(Icons.place),
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onTap: () {
+                FocusScope.of(context).requestFocus(_destinationFocus);
+              },
+            ),
+            SizedBox(height: 16),
+            Text("Preset Locations", style: TextStyle(fontWeight: FontWeight.bold)),
+            _presetButton('Home Address', '123 Main St'),
+            _presetButton('Work Address', '456 Office Blvd'),
+            Divider(),
+            Text("Quick Addresses", style: TextStyle(fontWeight: FontWeight.bold)),
+            ...quickOptions.map((addr) => ListTile(
+                  title: Text(addr),
+                  onTap: () => _handleQuickOptionTap(addr),
+                )),
+            SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: Icon(Icons.local_taxi),
+              label: Text('Book Ride'),
+              onPressed: _bookRide,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Time Slot Screen
+class TimeSlotScreen extends StatelessWidget {
+  final String pickup;
+  final String destination;
+
+  TimeSlotScreen({required this.pickup, required this.destination});
+
+  final List<String> timeSlots = [
+    '9:00 AM - 10:00 AM',
+    '10:00 AM - 11:00 AM',
+    '11:00 AM - 12:00 PM',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Time Slot'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: ListView.builder(
+        itemCount: timeSlots.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(timeSlots[index]),
+            onTap: () {
+              // After selecting a time slot, navigate to the booking confirmation
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text('Ride Booked'),
+                  content: Text(
+                      'Pickup: $pickup\nDestination: $destination\nTime: ${timeSlots[index]}'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // If it's the schedule option, show the queue screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => QueueStatusScreen()),
+                        );
+                      },
+                      child: Text('OK'),
+                    )
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class QueueStatusScreen extends StatefulWidget {
+  const QueueStatusScreen({super.key});
+
+  @override
+  _QueueStatusScreenState createState() => _QueueStatusScreenState();
+}
+
+class _QueueStatusScreenState extends State<QueueStatusScreen> {
+  int position = 3;
+  Timer? timer;
+
+  void _simulateRideConfirmation() {
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: 4), (timer) {
+      if (position > 1) {
+        setState(() => position--);
+      } else {
+        timer.cancel();
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('Ride Confirmed!'),
+            content: Text('Your ride has been assigned.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
+            ],
+          ),
+        );
+      }
+    });
+  }
+
+  void _joinWaitlist() {
+    setState(() => position++);
+  }
+
+  @override
+  void dispose() {
     timer?.cancel();
     super.dispose();
   }
@@ -174,238 +524,73 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Use a background image for the entire screen
       body: Stack(
         children: [
+          // Background image from network with error handling
           Positioned.fill(
             child: Image.network(
-              'https://i.postimg.cc/Xq0tf6Sn/stevens.png',
+              'https://your-valid-image-url.com', // Replace this with a valid URL
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Center(child: Text('Image not found', style: TextStyle(color: Colors.white)));
+              },
             ),
           ),
-          // Dark overlay for better contrast
+          // Overlay for darkening effect
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.3)),
+            child: Container(
+              color: Color.fromRGBO(0, 0, 0, 0.3), // replaces deprecated withOpacity
+            ),
           ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'SmartCampus Ride',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.black.withOpacity(0.5),
-                              offset: Offset(4.0, 4.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '3:00',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 6.0,
-                              color: Colors.black.withOpacity(0.3),
-                              offset: Offset(3.0, 3.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Finding Your Nearest Ride!',
+                  style: TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                SizedBox(height: 20),
+                Icon(Icons.directions_car, size: 50, color: Colors.white),
+                SizedBox(height: 20),
+                Text('Your position in line is',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                Text(
+                  position.toString().padLeft(2, '0'),
+                  style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent),
+                ),
+                Text(
+                  'You will get your confirmation within 15 mins',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.check),
+                  label: Text('Book Ride'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green[600],
                   ),
-                  SizedBox(height: 20),
-
-                  // LOCATION INPUT SECTION
-                  TextField(
-                    controller: _pickupController,
-                    focusNode: _pickupFocus,
-                    decoration: InputDecoration(
-                      labelText: 'Pickup Location',
-                      prefixIcon: Icon(Icons.my_location),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(_pickupFocus);
-                    },
-                    onSubmitted: (_) {
-                      FocusScope.of(context).requestFocus(_destinationFocus);
-                    },
+                  onPressed: _simulateRideConfirmation,
+                ),
+                TextButton(
+                  onPressed: _joinWaitlist,
+                  child: Text(
+                    'Someone joined the waitlist',
+                    style: TextStyle(color: Colors.white),
                   ),
-                  SizedBox(height: 12),
-                  TextField(
-                    controller: _destinationController,
-                    focusNode: _destinationFocus,
-                    decoration: InputDecoration(
-                      labelText: 'Destination Location',
-                      prefixIcon: Icon(Icons.place),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(_destinationFocus);
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Text("Preset Locations",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white)),
-                  _buildPresetButton('Home Address', '123 Main St'),
-                  _buildPresetButton('Work Address', '456 Office Blvd'),
-                  Divider(color: Colors.white),
-                  Text("Quick Addresses",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white)),
-                  ...quickOptions.map((addr) => ListTile(
-                        title:
-                            Text(addr, style: TextStyle(color: Colors.white)),
-                        onTap: () => _handleQuickOptionTap(addr),
-                      )),
-                  SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    icon: Icon(Icons.local_taxi),
-                    label: Text('Book Ride'),
-                    onPressed: _bookRide,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                    ),
-                  ),
-                  SizedBox(height: 30),
-
-                  // QUEUE STATUS SECTION (visible if booking started)
-                  if (_bookingStarted) ...[
-                    Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            'Finding Your Nearest Ride!',
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          SizedBox(height: 20),
-                          Icon(Icons.directions_car,
-                              size: 50, color: Colors.white),
-                          SizedBox(height: 20),
-                          Text('Your position in line is',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white)),
-                          Text(
-                            position.toString().padLeft(2, '0'),
-                            style: TextStyle(
-                                fontSize: 48,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent),
-                          ),
-                          Text(
-                            'You will get your confirmation within 15 mins',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          SizedBox(height: 30),
-                          ElevatedButton.icon(
-                            icon: Icon(Icons.check),
-                            label: Text('Confirm Ride'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green[600],
-                            ),
-                            onPressed: _simulateRideConfirmation,
-                          ),
-                          TextButton(
-                            onPressed: _joinWaitlist,
-                            child: Text(
-                              'Someone joined the waitlist',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                  ],
-
-                  // SCHEDULE SECTION
-                  Text("Schedule",
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2)),
-                  SizedBox(height: 20),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Available Time Slots:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 10,
-                    children: availableTimes
-                        .map((time) => _buildTimeSlot(time))
-                        .toList(),
-                  ),
-                  if (selectedTime != null) ...[
-                    SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: _bookSlot,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        textStyle:
-                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 5,
-                      ),
-                      child: Text('Book Now'),
-                    ),
-                  ],
-                  SizedBox(height: 30),
-                  // Chat Button (FAB style)
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 24,
-                      child: Icon(Icons.chat, color: Colors.blueAccent),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
