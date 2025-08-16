@@ -1,9 +1,23 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+// ====================== INTEGRATION_START ======================
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// /// Local dev / prod endpoint for real backend
+// const String kChatApi = "http://10.0.2.2:8080/chat";
+// ====================== INTEGRATION_END ========================
+
+/// Simple message model so alignment is reliable.
+class ChatMessage {
+  final String text;
+  final bool isUser;
+  const ChatMessage(this.text, this.isUser);
+}
 
 class ChatScaffold extends StatefulWidget {
   final Widget body;
   final PreferredSizeWidget? appBar;
-  final Color? backgroundColor; 
+  final Color? backgroundColor;
 
   const ChatScaffold({
     super.key,
@@ -18,12 +32,115 @@ class ChatScaffold extends StatefulWidget {
 
 class _ChatScaffoldState extends State<ChatScaffold> {
   bool _isChatOpen = false;
-  bool _firstTimeOpened = true; 
+  bool _firstTimeOpened = true;
   double _buttonBottom = 30;
   double _buttonRight = 20;
 
-  final List<String> _messages = []; 
+  final List<ChatMessage> _messages = [];
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  /// Light auto-scroll to the bottom when new messages arrive.
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  // ====================== MOCK BEHAVIOR (ACTIVE NOW) ======================
+  /// Mocked send: simulates typing, then returns a friendly echo.
+  Future<void> _sendToBot(String userText) async {
+    // 1) Add user message
+    setState(() {
+      _messages.add(ChatMessage(userText, true));
+    });
+    _scrollToBottom();
+
+    // 2) Show typing indicator
+    setState(() {
+      _messages.add(const ChatMessage("...", false));
+    });
+    _scrollToBottom();
+
+    try {
+      // simulate network + thinking delay
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // Replace typing indicator with mock reply
+      setState(() {
+        _messages.removeLast();
+        _messages.add(ChatMessage("Echo from Stev-o-mate: $userText", false));
+      });
+    } catch (e) {
+      setState(() {
+        _messages.removeLast();
+        _messages.add(ChatMessage("Mock error: $e", false));
+      });
+    }
+
+    _scrollToBottom();
+  }
+  // ====================== MOCK END ======================
+
+
+  // ====================== INTEGRATION_START ======================
+  // /// Real backend integration version — uncomment when backend is ready,
+  // /// and comment out the MOCK version above.
+  // Future<void> _sendToBot(String userText) async {
+  //   setState(() {
+  //     _messages.add(ChatMessage(userText, true));
+  //   });
+  //   _scrollToBottom();
+  //
+  //   setState(() {
+  //     _messages.add(const ChatMessage("...", false));
+  //   });
+  //   _scrollToBottom();
+  //
+  //   try {
+  //     final history = _messages
+  //         .where((m) => m.text != "...")
+  //         .map((m) => {
+  //               "role": m.isUser ? "user" : "assistant",
+  //               "content": m.text,
+  //             })
+  //         .toList();
+  //
+  //     final resp = await http.post(
+  //       Uri.parse(kChatApi),
+  //       headers: {"Content-Type": "application/json"},
+  //       body: jsonEncode({"messages": history}),
+  //     );
+  //
+  //     if (resp.statusCode == 200) {
+  //       final data = jsonDecode(resp.body) as Map<String, dynamic>;
+  //       final reply = (data["reply"] ?? "Sorry, I didn’t catch that.").toString();
+  //       setState(() {
+  //         _messages.removeLast();
+  //         _messages.add(ChatMessage(reply, false));
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _messages.removeLast();
+  //         _messages.add(ChatMessage("Server error: ${resp.statusCode}", false));
+  //       });
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _messages.removeLast();
+  //       _messages.add(ChatMessage("Network error: $e", false));
+  //     });
+  //   }
+  //
+  //   _scrollToBottom();
+  // }
+  // ====================== INTEGRATION_END ======================
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +148,7 @@ class _ChatScaffoldState extends State<ChatScaffold> {
       appBar: widget.appBar,
       body: Stack(
         children: [
-          Container(
-            color: widget.backgroundColor, 
-            child: widget.body,
-          ),
+          Container(color: widget.backgroundColor, child: widget.body),
 
           // Floating draggable chat button
           Positioned(
@@ -48,30 +162,34 @@ class _ChatScaffoldState extends State<ChatScaffold> {
 
                   if (_buttonBottom < 10) _buttonBottom = 10;
                   if (_buttonRight < 10) _buttonRight = 10;
-                  if (_buttonBottom > MediaQuery.of(context).size.height - 80) {
-                    _buttonBottom = MediaQuery.of(context).size.height - 80;
+
+                  final size = MediaQuery.of(context).size;
+                  if (_buttonBottom > size.height - 80) {
+                    _buttonBottom = size.height - 80;
                   }
-                  if (_buttonRight > MediaQuery.of(context).size.width - 60) {
-                    _buttonRight = MediaQuery.of(context).size.width - 60;
+                  if (_buttonRight > size.width - 60) {
+                    _buttonRight = size.width - 60;
                   }
                 });
               },
               child: FloatingActionButton(
-                backgroundColor: const Color.fromARGB(255, 224, 103, 103),
+                backgroundColor: const Color(0xFFE06767), // light red
                 onPressed: () {
                   setState(() {
                     _isChatOpen = !_isChatOpen;
 
-                    
+                    // First-time welcome message
                     if (_isChatOpen && _firstTimeOpened) {
-                      _messages.add(
-                        "Welcome to Smart-Campus! I'm Stev-o-mate, how can I help you?"
-                      );
+                      _messages.add(const ChatMessage(
+                        "Welcome to Smart-Campus! I'm Stev-o-mate, how can I help you?",
+                        false,
+                      ));
                       _firstTimeOpened = false;
                     }
                   });
+                  _scrollToBottom();
                 },
-                child: const Icon(Icons.chat, color: Colors.black,),
+                child: const Icon(Icons.chat, color: Colors.black), // black icon
               ),
             ),
           ),
@@ -94,9 +212,9 @@ class _ChatScaffoldState extends State<ChatScaffold> {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         width: 300,
-        height: 400,
+        height: 420,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 215, 129, 129),
+          color: const Color.fromARGB(255, 215, 129, 129), // your pinkish bg
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -116,11 +234,7 @@ class _ChatScaffoldState extends State<ChatScaffold> {
                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isChatOpen = false;
-                      });
-                    },
+                    onTap: () => setState(() => _isChatOpen = false),
                     child: const Icon(Icons.close, color: Colors.white),
                   ),
                 ],
@@ -133,26 +247,26 @@ class _ChatScaffoldState extends State<ChatScaffold> {
                 padding: const EdgeInsets.all(8),
                 color: Colors.grey[100],
                 child: ListView.builder(
+                  controller: _scrollController,
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
-                    final message = _messages[index];
-                    final isUser = index % 2 == 1; // 🔑 simple trick: odd = user, even = bot
-                    // You can replace with a proper model later (like storing sender info)
+                    final m = _messages[index];
+                    final isUser = m.isUser;
 
                     return Align(
                       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.all(10),
-                        constraints: BoxConstraints(maxWidth: 220), // prevents super long lines
+                        constraints: const BoxConstraints(maxWidth: 220),
                         decoration: BoxDecoration(
                           color: isUser ? Colors.white : const Color(0xB3E97A7A),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          message,
+                          m.text,
                           style: TextStyle(
-                            color: isUser ? Colors.black : const Color.fromARGB(255, 0, 0, 0), 
+                            color: isUser ? Colors.black : const Color.fromARGB(255, 0, 0, 0),
                           ),
                         ),
                       ),
@@ -160,13 +274,12 @@ class _ChatScaffoldState extends State<ChatScaffold> {
                   },
                 ),
               ),
-        ),
-
+            ),
 
             // Input box
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              color: Colors.white, // whole bottom bar white
               child: Row(
                 children: [
                   Expanded(
@@ -174,21 +287,29 @@ class _ChatScaffoldState extends State<ChatScaffold> {
                       controller: _controller,
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
+                        filled: true,
+                        fillColor: Colors.white, // input white
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       ),
+                      onSubmitted: (value) {
+                        final text = value.trim();
+                        if (text.isNotEmpty) {
+                          _controller.clear();
+                          _sendToBot(text);
+                        }
+                      },
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.send),
                     onPressed: () {
-                      if (_controller.text.trim().isNotEmpty) {
-                        setState(() {
-                          _messages.add(_controller.text.trim());
-                          _controller.clear();
-                        });
+                      final text = _controller.text.trim();
+                      if (text.isNotEmpty) {
+                        _controller.clear();
+                        _sendToBot(text);
                       }
                     },
                   ),

@@ -475,6 +475,7 @@ class QueueStatusScreen extends StatefulWidget {
   const QueueStatusScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _QueueStatusScreenState createState() => _QueueStatusScreenState();
 }
 
